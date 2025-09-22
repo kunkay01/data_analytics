@@ -1,0 +1,24 @@
+Use case (1): Price prediction for rental apartments (Canton Zurich)
+
+Problem definition: Apartment seekers and landlords lack a transparent, data-driven view of fair market rents at listing time across communes and micro-locations.
+
+Objective: Build a predictive model that estimates monthly rent from apartment features and location context.
+
+Research question: Which features (size, rooms, location, amenities, transit access, building age, etc.) best explain and predict monthly rent across the canton?
+
+Hypothesis: Controlling for size, rooms, and condition, location quality (e.g., proximity to rail/tram, centrality, neighborhood demographics) explains a significant share of price variance; adding municipality-level indicators reduces out-of-sample error.
+
+Expected business value: Faster pricing decisions, better negotiation baseline, reduced time-on-market, and improved user trust through explainable pricing guidance.
+
+
+Use case (2): Demand & supply for supermarkets in Swiss municipalities
+
+Problem definition: Retail planners need to see mismatches between grocery demand (population/households/income) and supply (existing supermarkets, accessibility) at municipal level.
+
+Objective: Quantify demand vs. supply to identify underserved or overserved municipalities.
+
+Research question: Where do demand indicators outstrip current supermarket coverage, when controlling for accessibility and competition?
+
+Hypothesis: Municipalities with higher daytime population, lower travel time to nearest center, and higher household counts but few supermarkets exhibit unmet demand.
+
+Expected business value: Evidence-based site selection, portfolio optimization, and targeted local expansion/closure decisions.

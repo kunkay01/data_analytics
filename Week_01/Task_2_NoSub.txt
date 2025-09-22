@@ -1,0 +1,26 @@
+Task 2 — Proposed data (sources & key fields)
+(1) Rental price prediction
+
+Listings data (ImmoScout24): title/description, monthly rent (CHF), rooms, living area (m²), floor, balcony/parking, building condition/year, address/ZIP, latitude/longitude (if available), listing date. (Explore the fields available per offer on immoscout24.ch as directed.) 
+
+Excercises_Week_01
+
+Municipality-level data (SFSO “Regionalporträts 2021: Kennzahlen aller Gemeinden”): population, households, median income/proxy variables, unemployment, age structure, housing stock, tax burden, area, density. 
+
+Excercises_Week_01
+
+Accessibility/context (optional enrichments): distance to nearest rail/tram stop, travel time to Zurich HB/Winterthur HB, POI density (schools, parks), noise zones (if available).
+
+Rationale: Combine micro-level listing features with municipality context to capture both property attributes and location effects (fixed effects / embeddings).
+
+(2) Supermarket demand vs. supply
+
+Supply (OpenStreetMap, shop=supermarket): geometry (node/way/relation), brand/operator, opening hours (if present). Use OSM tagging guide as referenced. 
+
+Excercises_Week_01
+
+Demand (SFSO Regionalporträts): population, households, income proxies, age groups, employment, commuting flows (if available), car ownership proxies.
+
+Accessibility: road network distances or simple centroid distances; optional public-transport reachability.
+
+Rationale: Compute per-municipality supermarket count/density, coverage (within X km), and demand indicators; derive a gap index = f(population, households, income) – g(supermarket coverage).
