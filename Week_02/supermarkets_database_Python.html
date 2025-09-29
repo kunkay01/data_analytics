@@ -3,7 +3,7 @@
 <html lang="en">
 <head><meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>apartments_data_preparation_zuerich</title><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script>
+<title>supermarkets_database_Python</title><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script>
 <style type="text/css">
     pre { line-height: 125%; }
 td.linenos .normal { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
@@ -7511,18 +7511,18 @@ a.anchor-link {
 <!-- End of mermaid configuration --></head>
 <body class="jp-Notebook" data-jp-theme-light="true" data-jp-theme-name="JupyterLab Light">
 <main>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=3272230e">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=spectacular-oxford">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h1 id="Importing-and-preparing-rental-apartments-data">Importing and preparing rental apartments data<a class="anchor-link" href="#Importing-and-preparing-rental-apartments-data">¶</a></h1>
+<h1 id="Writing-data-to-and-reading-data-from-a-Database-using-Python">Writing data to and reading data from a Database using Python<a class="anchor-link" href="#Writing-data-to-and-reading-data-from-a-Database-using-Python">¶</a></h1>
 </div>
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=c0e6a164">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=14d7fbf5">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -7532,7 +7532,7 @@ a.anchor-link {
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=e3b51c23">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=6b7c9af0">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -7542,15 +7542,23 @@ a.anchor-link {
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Libraries</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sqlite3</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">fnmatch</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 
 <span class="c1"># Ignore warnings</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">"ignore"</span><span class="p">)</span>
+
+<span class="c1"># Function to close a sqlite db-connection</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">check_conn</span><span class="p">(</span><span class="n">conn</span><span class="p">):</span>
+     <span class="k">try</span><span class="p">:</span>
+        <span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+        <span class="k">return</span> <span class="kc">True</span>
+     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
 
 <span class="c1"># Get current working directory</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">())</span>
@@ -7573,17 +7581,17 @@ a.anchor-link {
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=2a7bff4a">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=0b880d4d">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="Importing-data">Importing data<a class="anchor-link" href="#Importing-data">¶</a></h2>
+<h2 id="Create-sqlite-data-base">Create sqlite data base<a class="anchor-link" href="#Create-sqlite-data-base">¶</a></h2>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=aa8f37dd">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=240f7517">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -7591,16 +7599,14 @@ a.anchor-link {
 <div class="jp-InputPrompt jp-InputArea-prompt">In [2]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
-<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Show .csv - files in the directory</span>
-<span class="n">flist</span> <span class="o">=</span> <span class="n">fnmatch</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="s1">'.'</span><span class="p">),</span> <span class="s1">'*.csv'</span><span class="p">)</span>
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Create data base</span>
+<span class="n">conn</span> <span class="o">=</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">'supermarkets_database.db'</span><span class="p">)</span> 
+<span class="n">cursor</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+
+<span class="c1"># Show dbs in the directory</span>
+<span class="n">flist</span> <span class="o">=</span> <span class="n">fnmatch</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="s1">'.'</span><span class="p">),</span> <span class="s1">'*.db'</span><span class="p">)</span>
 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">flist</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
-
-<span class="c1"># Read the data to a pandas data frame</span>
-<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">'apartments_data_winterthur.csv'</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">','</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">'utf-8'</span><span class="p">)</span>
-
-<span class="c1"># Show first records of data frame</span>
-<span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -7613,160 +7619,25 @@ a.anchor-link {
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>apartments_data_zuerich.csv
-apartments_data_prepared.csv
-apartments_data_winterthur.csv
-supermarkets_data_prepared.csv
-</pre>
-</div>
-</div>
-<div class="jp-OutputArea-child jp-OutputArea-executeResult">
-<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[2]:</div>
-<div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/html" tabindex="0">
-<div>
-<style scoped="">
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-<thead>
-<tr style="text-align: right;">
-<th></th>
-<th>web-scraper-order</th>
-<th>web-scraper-start-url</th>
-<th>rooms_area_price_raw</th>
-<th>address_raw</th>
-<th>price_raw</th>
-<th>description_raw</th>
-<th>text_raw</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<th>0</th>
-<td>1693993818-1</td>
-<td>https://www.immoscout24.ch/de/wohnung/mieten/o...</td>
-<td>6,5 Zimmer, 143 m², CHF 3017.—</td>
-<td>Am Eulachpark 25, 8404 Winterthur, ZH</td>
-<td>CHF 3017.—</td>
-<td>«Sie suchen die spezielle Maisonettewohnung?»</td>
-<td>6,5 Zimmer, 143 m², CHF 3017.—Am Eulachpark 25...</td>
-</tr>
-<tr>
-<th>1</th>
-<td>1693993818-2</td>
-<td>https://www.immoscout24.ch/de/wohnung/mieten/o...</td>
-<td>1 Zimmer, 132 m², CHF 3260.—</td>
-<td>Katharina Sulzer Platz 2, 8400 Winterthur, ZH</td>
-<td>CHF 3260.—</td>
-<td>«In Loft-iger Höhe MIETEN OHNE KAUTION»</td>
-<td>1 Zimmer, 132 m², CHF 3260.—Katharina Sulzer P...</td>
-</tr>
-<tr>
-<th>2</th>
-<td>1693993818-3</td>
-<td>https://www.immoscout24.ch/de/wohnung/mieten/o...</td>
-<td>4,5 Zimmer, 117 m², CHF 3782.—</td>
-<td>8400 Winterthur, ZH</td>
-<td>CHF 3782.—</td>
-<td>«MÖBLIERT, TEMPORÄR: 4½ ZI-WOHNUNG IN WINTERTH...</td>
-<td>4,5 Zimmer, 117 m², CHF 3782.—8400 Winterthur,...</td>
-</tr>
-<tr>
-<th>3</th>
-<td>1693993818-4</td>
-<td>https://www.immoscout24.ch/de/wohnung/mieten/o...</td>
-<td>3,5 Zimmer, 88 m², CHF 2244.—</td>
-<td>Untere Briggerstrasse 66, 8406 Winterthur, ZH</td>
-<td>CHF 2244.—</td>
-<td>«Modernes Leben im EG mit Gartensitzplatz»</td>
-<td>3,5 Zimmer, 88 m², CHF 2244.—Untere Briggerstr...</td>
-</tr>
-<tr>
-<th>4</th>
-<td>1693993818-5</td>
-<td>https://www.immoscout24.ch/de/wohnung/mieten/o...</td>
-<td>3,5 Zimmer, 80 m², CHF 1980.—</td>
-<td>Wülflingerstrasse 25, 8400 Winterthur, ZH</td>
-<td>CHF 1980.—</td>
-<td>«Schöne 3.5-Zimmerwohnung mit Balkon zu vermie...</td>
-<td>3,5 Zimmer, 80 m², CHF 1980.—Wülflingerstrasse...</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=b95e9f0e">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="Count-number-of-rows-and-columns-in-the-data-frame">Count number of rows and columns in the data frame<a class="anchor-link" href="#Count-number-of-rows-and-columns-in-the-data-frame">¶</a></h2>
-</div>
-</div>
-</div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=ec7391ad">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [3]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-<div class="cm-editor cm-s-jupyter">
-<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Dimension (rows, columns)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">'Dimension:'</span><span class="p">,</span> <span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
-
-<span class="c1"># Number of rows</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">'Number of rows:'</span><span class="p">,</span> <span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-
-<span class="c1"># Number of columns</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">'Number of columns:'</span><span class="p">,</span> <span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-</pre></div>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell-outputWrapper">
-<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
-</div>
-<div class="jp-OutputArea jp-Cell-outputArea">
-<div class="jp-OutputArea-child">
-<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>Dimension: (120, 7)
-Number of rows: 120
-Number of columns: 7
+<pre>apartment_database.db
+supermarkets_database.db
 </pre>
 </div>
 </div>
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=ace6d22c">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=aff97772">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="Get-data-types-(raw-format-from-web-scraping)">Get data types (raw-format from web scraping)<a class="anchor-link" href="#Get-data-types-(raw-format-from-web-scraping)">¶</a></h2>
+<h2 id="Create-SQL-table-in-the-database">Create SQL-table in the database<a class="anchor-link" href="#Create-SQL-table-in-the-database">¶</a></h2>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=dd9244a5">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs" id="cell-id=a3d83cba">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -7774,55 +7645,34 @@ Number of columns: 7
 <div class="jp-InputPrompt jp-InputArea-prompt">In [4]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
-<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Get data types (note that in pandas, a string is referred to as 'object')</span>
-<span class="n">df</span><span class="o">.</span><span class="n">dtypes</span>
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s1">'''CREATE TABLE IF NOT EXISTS supermarkets_table (SupermarketId Int(10),</span>
+<span class="s1">                                                               Lat DECIMAL(3,7),</span>
+<span class="s1">                                                               Lon DECIMAL(3,7),</span>
+<span class="s1">                                                               Shop VARCHAR(20),</span>
+<span class="s1">                                                               City VARCHAR(50),</span>
+<span class="s1">                                                               Street VARCHAR(50),               </span>
+<span class="s1">                                                               Housenumber VARCHAR(10),       </span>
+<span class="s1">                                                               Postcode Int(10),</span>
+<span class="s1">                                                               OpeningHours Varchar(50))'''</span><span class="p">)</span>
+<span class="c1"># Confirm changes to the table</span>
+<span class="n">conn</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 </div>
 </div>
-<div class="jp-Cell-outputWrapper">
-<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
 </div>
-<div class="jp-OutputArea jp-Cell-outputArea">
-<div class="jp-OutputArea-child jp-OutputArea-executeResult">
-<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[4]:</div>
-<div class="jp-RenderedText jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/plain" tabindex="0">
-<pre>web-scraper-order        object
-web-scraper-start-url    object
-rooms_area_price_raw     object
-address_raw              object
-price_raw                object
-description_raw          object
-text_raw                 object
-dtype: object</pre>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=9ea951fd">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=a87c8dee">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="Extract-and-save-relevant-information-from-raw-data-using-regular-expressions-(regex)">Extract and save relevant information from raw data using regular expressions (regex)<a class="anchor-link" href="#Extract-and-save-relevant-information-from-raw-data-using-regular-expressions-(regex)">¶</a></h2>
+<h2 id="Read-data-from-file-to-data-frame">Read data from file to data frame<a class="anchor-link" href="#Read-data-from-file-to-data-frame">¶</a></h2>
 </div>
 </div>
 </div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=7c3be629">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h3 id="Extract-number-of-rooms">Extract number of rooms<a class="anchor-link" href="#Extract-number-of-rooms">¶</a></h3>
-</div>
-</div>
-</div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=1c543c59">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=34300bd6">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -7830,22 +7680,12 @@ dtype: object</pre>
 <div class="jp-InputPrompt jp-InputArea-prompt">In [5]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
-<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Extract values from 'rooms_area_price_raw' strings</span>
-<span class="n">rooms</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">df</span><span class="p">[</span><span class="s1">'rooms_area_price_raw'</span><span class="p">]:</span>
-    <span class="n">d1</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">'(.*)Zimmer'</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">d2</span> <span class="o">=</span> <span class="n">d1</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">','</span><span class="p">,</span> <span class="s1">'.'</span><span class="p">)</span>
-    <span class="k">except</span><span class="p">:</span>
-        <span class="n">d2</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">rooms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d2</span><span class="p">)</span>
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">'supermarkets_data_prepared.csv'</span><span class="p">,</span>
+                  <span class="n">sep</span><span class="o">=</span><span class="s1">','</span><span class="p">,</span> 
+                  <span class="n">encoding</span><span class="o">=</span><span class="s1">'utf-8'</span><span class="p">)[[</span><span class="s1">'id'</span><span class="p">,</span> <span class="s1">'lat'</span><span class="p">,</span> <span class="s1">'lon'</span><span class="p">,</span> <span class="s1">'shop'</span><span class="p">,</span> <span class="s1">'city'</span><span class="p">,</span> <span class="s1">'street'</span><span class="p">,</span> <span class="s1">'housenumber'</span><span class="p">,</span> <span class="s1">'postcode'</span><span class="p">,</span> <span class="s1">'opening_hours'</span><span class="p">]]</span>
 
-<span class="c1"># Save as new variable in the pandas data frame</span>
-<span class="n">df</span><span class="p">[</span><span class="s1">'rooms'</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">rooms</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">"float64"</span><span class="p">)</span>
-    
-<span class="c1"># Print first 5 values</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">'rooms_area_price_raw'</span><span class="p">]</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">5</span><span class="p">),</span> <span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">'rooms'</span><span class="p">]</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">5</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -7858,36 +7698,122 @@ dtype: object</pre>
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>0    6,5 Zimmer, 143 m², CHF 3017.—
-1      1 Zimmer, 132 m², CHF 3260.—
-2    4,5 Zimmer, 117 m², CHF 3782.—
-3     3,5 Zimmer, 88 m², CHF 2244.—
-4     3,5 Zimmer, 80 m², CHF 1980.—
-Name: rooms_area_price_raw, dtype: object 
-
-0    6.5
-1    1.0
-2    4.5
-3    3.5
-4    3.5
-Name: rooms, dtype: float64
+<pre>(3392, 9)
 </pre>
 </div>
 </div>
+<div class="jp-OutputArea-child jp-OutputArea-executeResult">
+<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[5]:</div>
+<div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/html" tabindex="0">
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+<thead>
+<tr style="text-align: right;">
+<th></th>
+<th>id</th>
+<th>lat</th>
+<th>lon</th>
+<th>shop</th>
+<th>city</th>
+<th>street</th>
+<th>housenumber</th>
+<th>postcode</th>
+<th>opening_hours</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th>0</th>
+<td>33126515</td>
+<td>47.155616</td>
+<td>9.037915</td>
+<td>supermarket</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>Mo-Th 08:00-19:00; Fr 08:00-20:00; Sa 08:00-17:00</td>
+</tr>
+<tr>
+<th>1</th>
+<td>36726161</td>
+<td>47.226191</td>
+<td>8.980329</td>
+<td>supermarket</td>
+<td>Uznach</td>
+<td>Zürcherstrasse</td>
+<td>25</td>
+<td>8730.0</td>
+<td>Mo-Th 08:00-19:00, Fr 08:00-20:00, Sa 07:30-17...</td>
+</tr>
+<tr>
+<th>2</th>
+<td>39768209</td>
+<td>47.225069</td>
+<td>8.969981</td>
+<td>supermarket</td>
+<td>Uznach</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>8730.0</td>
+<td>NaN</td>
+</tr>
+<tr>
+<th>3</th>
+<td>39947904</td>
+<td>47.376732</td>
+<td>8.542161</td>
+<td>supermarket</td>
+<td>Zürich</td>
+<td>Bahnhofbrücke</td>
+<td>1</td>
+<td>8001.0</td>
+<td>Mo-Sa 06:00-22:00</td>
+</tr>
+<tr>
+<th>4</th>
+<td>48932835</td>
+<td>47.375020</td>
+<td>8.522895</td>
+<td>supermarket</td>
+<td>Zürich</td>
+<td>Wengistrasse</td>
+<td>7</td>
+<td>8004.0</td>
+<td>Mo-Sa 08:00-21:00; PH off</td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=d7f049dc">
+</div>
+</div>
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=ef970dfe">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h3 id="Extract-living-area">Extract living area<a class="anchor-link" href="#Extract-living-area">¶</a></h3>
+<h2 id="Write-data-to-the-SQL-table-in-data-base">Write data to the SQL-table in data base<a class="anchor-link" href="#Write-data-to-the-SQL-table-in-data-base">¶</a></h2>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=85bc7408">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=1c728ac7">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -7895,137 +7821,10 @@ Name: rooms, dtype: float64
 <div class="jp-InputPrompt jp-InputArea-prompt">In [6]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
-<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Extract values from 'rooms_area_price_raw' strings</span>
-<span class="n">area</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">df</span><span class="p">[</span><span class="s1">'rooms_area_price_raw'</span><span class="p">]:</span>
-    <span class="n">d1</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">'Zimmer, (.*)m²'</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">d2</span> <span class="o">=</span> <span class="n">d1</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-    <span class="k">except</span><span class="p">:</span>
-        <span class="n">d2</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">area</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d2</span><span class="p">)</span>
-
-<span class="c1"># Save as new variable in the pandas data frame</span>
-<span class="n">df</span><span class="p">[</span><span class="s1">'area'</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">area</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">"Int64"</span><span class="p">)</span>
-
-<span class="c1"># Print first 5 values</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">'rooms_area_price_raw'</span><span class="p">]</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">5</span><span class="p">),</span> <span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">'area'</span><span class="p">]</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">5</span><span class="p">))</span>
-</pre></div>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell-outputWrapper">
-<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
-</div>
-<div class="jp-OutputArea jp-Cell-outputArea">
-<div class="jp-OutputArea-child">
-<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>0    6,5 Zimmer, 143 m², CHF 3017.—
-1      1 Zimmer, 132 m², CHF 3260.—
-2    4,5 Zimmer, 117 m², CHF 3782.—
-3     3,5 Zimmer, 88 m², CHF 2244.—
-4     3,5 Zimmer, 80 m², CHF 1980.—
-Name: rooms_area_price_raw, dtype: object 
-
-0    143
-1    132
-2    117
-3     88
-4     80
-Name: area, dtype: Int64
-</pre>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=319ca1bd">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h3 id="Extract-rental-price">Extract rental price<a class="anchor-link" href="#Extract-rental-price">¶</a></h3>
-</div>
-</div>
-</div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=97bba5d3">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [7]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-<div class="cm-editor cm-s-jupyter">
-<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Extract values from 'price_raw' strings</span>
-<span class="n">price</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">df</span><span class="p">[</span><span class="s1">'price_raw'</span><span class="p">]:</span>
-    <span class="n">d1</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">'[0-9]+'</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">d2</span> <span class="o">=</span> <span class="n">d1</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-    <span class="k">except</span><span class="p">:</span>
-        <span class="n">d2</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">price</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d2</span><span class="p">)</span>
-
-<span class="c1"># Save as new variable in the pandas data frame</span>
-<span class="n">df</span><span class="p">[</span><span class="s1">'price'</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">price</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">"Int64"</span><span class="p">)</span>
-
-<span class="c1"># Print first 5 values</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">'price_raw'</span><span class="p">]</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">5</span><span class="p">),</span> <span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">'price'</span><span class="p">]</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">5</span><span class="p">))</span>
-</pre></div>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell-outputWrapper">
-<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
-</div>
-<div class="jp-OutputArea jp-Cell-outputArea">
-<div class="jp-OutputArea-child">
-<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>0    CHF 3017.—
-1    CHF 3260.—
-2    CHF 3782.—
-3    CHF 2244.—
-4    CHF 1980.—
-Name: price_raw, dtype: object 
-
-0    3017
-1    3260
-2    3782
-3    2244
-4    1980
-Name: price, dtype: Int64
-</pre>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=53c03c80">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h3 id="Get-data-types-of-all-variables-including-the-new-ones">Get data types of all variables including the new ones<a class="anchor-link" href="#Get-data-types-of-all-variables-including-the-new-ones">¶</a></h3>
-</div>
-</div>
-</div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=e2bc73f4">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [8]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-<div class="cm-editor cm-s-jupyter">
-<div class="highlight hl-ipython3"><pre><span></span><span class="n">df</span><span class="o">.</span><span class="n">dtypes</span>
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">df</span><span class="o">.</span><span class="n">to_sql</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s1">'supermarkets_table'</span><span class="p">,</span>
+          <span class="n">con</span> <span class="o">=</span> <span class="n">conn</span><span class="p">,</span>
+          <span class="n">index</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+          <span class="n">if_exists</span> <span class="o">=</span> <span class="s1">'replace'</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -8036,47 +7835,41 @@ Name: price, dtype: Int64
 </div>
 <div class="jp-OutputArea jp-Cell-outputArea">
 <div class="jp-OutputArea-child jp-OutputArea-executeResult">
-<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[8]:</div>
+<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[6]:</div>
 <div class="jp-RenderedText jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/plain" tabindex="0">
-<pre>web-scraper-order         object
-web-scraper-start-url     object
-rooms_area_price_raw      object
-address_raw               object
-price_raw                 object
-description_raw           object
-text_raw                  object
-rooms                    float64
-area                       Int64
-price                      Int64
-dtype: object</pre>
+<pre>3392</pre>
 </div>
 </div>
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=bad3c2d0">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=43c2ef9f">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="Count-and-identify-missing-values-(if-any)">Count and identify missing values (if any)<a class="anchor-link" href="#Count-and-identify-missing-values-(if-any)">¶</a></h2>
+<h2 id="Query-the-SQL-table">Query the SQL-table<a class="anchor-link" href="#Query-the-SQL-table">¶</a></h2>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=707adcf1">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=48dcc02c">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [9]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [13]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
-<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Count missing values</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">isna</span><span class="p">(</span><span class="n">df</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Query the SQL-table</span>
+<span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s1">'''SELECT *</span>
+<span class="s1">               FROM supermarkets_table</span>
+<span class="s1">               WHERE City='Winterthur'</span>
+<span class="s1">               '''</span><span class="p">)</span>
 
-<span class="c1"># Identify rows with missing values</span>
-<span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">cursor</span><span class="o">.</span><span class="n">fetchall</span><span class="p">(),</span> 
+                  <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">'SupermarketId'</span><span class="p">,</span><span class="s1">'Lat'</span><span class="p">,</span><span class="s1">'Lon'</span><span class="p">,</span><span class="s1">'Shop'</span><span class="p">,</span><span class="s1">'City'</span><span class="p">,</span><span class="s1">'Street'</span><span class="p">,</span><span class="s1">'Housenumber'</span><span class="p">,</span> <span class="s1">'Postcode'</span><span class="p">,</span> <span class="s1">'OpeningHours'</span><span class="p">])</span>    
+<span class="n">df</span>
 </pre></div>
 </div>
 </div>
@@ -8086,25 +7879,8 @@ dtype: object</pre>
 <div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
 </div>
 <div class="jp-OutputArea jp-Cell-outputArea">
-<div class="jp-OutputArea-child">
-<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>web-scraper-order         0
-web-scraper-start-url     0
-rooms_area_price_raw      0
-address_raw               0
-price_raw                 0
-description_raw           0
-text_raw                  0
-rooms                     1
-area                     11
-price                     1
-dtype: int64
-</pre>
-</div>
-</div>
 <div class="jp-OutputArea-child jp-OutputArea-executeResult">
-<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[9]:</div>
+<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[13]:</div>
 <div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/html" tabindex="0">
 <div>
 <style scoped="">
@@ -8124,83 +7900,341 @@ dtype: int64
 <thead>
 <tr style="text-align: right;">
 <th></th>
-<th>web-scraper-order</th>
-<th>web-scraper-start-url</th>
-<th>rooms_area_price_raw</th>
-<th>address_raw</th>
-<th>price_raw</th>
-<th>description_raw</th>
-<th>text_raw</th>
-<th>rooms</th>
-<th>area</th>
-<th>price</th>
+<th>SupermarketId</th>
+<th>Lat</th>
+<th>Lon</th>
+<th>Shop</th>
+<th>City</th>
+<th>Street</th>
+<th>Housenumber</th>
+<th>Postcode</th>
+<th>OpeningHours</th>
 </tr>
 </thead>
 <tbody>
 <tr>
+<th>0</th>
+<td>70656488</td>
+<td>47.491874</td>
+<td>8.706448</td>
+<td>supermarket</td>
+<td>Winterthur</td>
+<td>Zürcherstrasse</td>
+<td>102</td>
+<td>8406.0</td>
+<td>Mo-Fr 07:30-20:00; PH off; Sa 08:00-19:00</td>
+</tr>
+<tr>
+<th>1</th>
+<td>246533376</td>
+<td>47.518953</td>
+<td>8.720071</td>
+<td>supermarket</td>
+<td>Winterthur</td>
+<td>Schaffhauserstrasse</td>
+<td>152</td>
+<td>8400.0</td>
+<td>Mo-Fr 08:30-20:00, Sa 08:00-18:00; PH off</td>
+</tr>
+<tr>
+<th>2</th>
+<td>548919417</td>
+<td>47.506863</td>
+<td>8.712208</td>
+<td>supermarket</td>
+<td>Winterthur</td>
+<td>Wülflingerstrasse</td>
+<td>71</td>
+<td>8400.0</td>
+<td>Mo-Fr 07:30-20:00, Sa 08:00-18:00; PH off</td>
+</tr>
+<tr>
+<th>3</th>
+<td>677194765</td>
+<td>47.503208</td>
+<td>8.752131</td>
+<td>supermarket</td>
+<td>Winterthur</td>
+<td>Frauenfelderstrasse</td>
+<td>69</td>
+<td>8404.0</td>
+<td>None</td>
+</tr>
+<tr>
+<th>4</th>
+<td>706203439</td>
+<td>47.500848</td>
+<td>8.725938</td>
+<td>supermarket</td>
+<td>Winterthur</td>
+<td>Bankstrasse</td>
+<td>8/12</td>
+<td>8400.0</td>
+<td>Mo-Fr 08:30-20:00; Sa 08:00-20:00; Su,PH off</td>
+</tr>
+<tr>
+<th>5</th>
+<td>709022324</td>
+<td>47.498421</td>
+<td>8.729118</td>
+<td>supermarket</td>
+<td>Winterthur</td>
+<td>Steinberggasse</td>
+<td>18</td>
+<td>8400.0</td>
+<td>Tu,Fr 08:30-13:00,14:00-18:00; We,Th 09:00-13:...</td>
+</tr>
+<tr>
 <th>6</th>
-<td>1693993818-7</td>
-<td>https://www.immoscout24.ch/de/wohnung/mieten/o...</td>
-<td>3,5 Zimmer, 171 m², Preis auf Anfrage</td>
-<td>Ernst-Jung-Gasse 16B, 8400 Winterthur, ZH</td>
-<td>Preis auf Anfrage</td>
-<td>«Erstbezug in 3.5 Zimmer-Maisonette-Wohnung in...</td>
-<td>3,5 Zimmer, 171 m², Preis auf AnfrageErnst-Jun...</td>
-<td>3.5</td>
-<td>171</td>
-<td>&lt;NA&gt;</td>
+<td>1328945987</td>
+<td>47.485289</td>
+<td>8.762742</td>
+<td>supermarket</td>
+<td>Winterthur</td>
+<td>Hinterdorfstrasse</td>
+<td>40</td>
+<td>8405.0</td>
+<td>Mo-We 08:00-19:00; Th,Fr 08:00-20:00; Sa 08:00...</td>
+</tr>
+<tr>
+<th>7</th>
+<td>1519474175</td>
+<td>47.485171</td>
+<td>8.763196</td>
+<td>supermarket</td>
+<td>Winterthur</td>
+<td>Hinterdorfstrasse</td>
+<td>40</td>
+<td>8405.0</td>
+<td>Mo-We 08:30-19:00; Th-Fr 08:30-20:00; Sa 08:00...</td>
+</tr>
+<tr>
+<th>8</th>
+<td>3831772784</td>
+<td>47.499163</td>
+<td>8.721153</td>
+<td>supermarket</td>
+<td>Winterthur</td>
+<td>Strickerstrasse</td>
+<td>3</td>
+<td>8400.0</td>
+<td>Mo-Fr 08:00-20:00, Sa 08:00-18:00; PH off</td>
+</tr>
+<tr>
+<th>9</th>
+<td>4058248551</td>
+<td>47.500117</td>
+<td>8.731930</td>
+<td>supermarket</td>
+<td>Winterthur</td>
+<td>Stadthausstrasse</td>
+<td>31</td>
+<td>8400.0</td>
+<td>Mo-Fr 07:00-20:00, Sa 08:00-18:00; PH off</td>
+</tr>
+<tr>
+<th>10</th>
+<td>4095400178</td>
+<td>47.501547</td>
+<td>8.747051</td>
+<td>supermarket</td>
+<td>Winterthur</td>
+<td>Römerstrasse</td>
+<td>77</td>
+<td>8404.0</td>
+<td>None</td>
+</tr>
+<tr>
+<th>11</th>
+<td>4095400190</td>
+<td>47.497901</td>
+<td>8.724756</td>
+<td>supermarket</td>
+<td>Winterthur</td>
+<td>Archplatz</td>
+<td>2</td>
+<td>8400.0</td>
+<td>Mo-Sa 08:00-20:00</td>
+</tr>
+<tr>
+<th>12</th>
+<td>4109460421</td>
+<td>47.501010</td>
+<td>8.722078</td>
+<td>supermarket</td>
+<td>Winterthur</td>
+<td>Wartstrasse</td>
+<td>14</td>
+<td>8400.0</td>
+<td>Mo-Fr 09:00-19:00; Sa 09:00-18:00</td>
 </tr>
 <tr>
 <th>13</th>
-<td>1693993818-14</td>
-<td>https://www.immoscout24.ch/de/wohnung/mieten/o...</td>
-<td>1 Zimmer, CHF 800.—</td>
-<td>Walkestrasse 5, 8400 Winterthur, ZH</td>
-<td>CHF 800.—</td>
-<td>«Schönes 1 Zimmer Studio (möbliert) im zentral...</td>
-<td>1 Zimmer, CHF 800.—Walkestrasse 5, 8400 Winter...</td>
-<td>1.0</td>
-<td>&lt;NA&gt;</td>
-<td>800</td>
+<td>4125136758</td>
+<td>47.500732</td>
+<td>8.720169</td>
+<td>supermarket</td>
+<td>Winterthur</td>
+<td>Neuwiesenstrasse</td>
+<td>6</td>
+<td>8400.0</td>
+<td>Mo-Sa 10:00-21:00</td>
+</tr>
+<tr>
+<th>14</th>
+<td>4189897383</td>
+<td>47.491100</td>
+<td>8.705538</td>
+<td>supermarket</td>
+<td>Winterthur</td>
+<td>Zürcherstrasse</td>
+<td>120</td>
+<td>8406.0</td>
+<td>Mo-Fr 07:30-20:00; Sa 08:00-19:00</td>
+</tr>
+<tr>
+<th>15</th>
+<td>4209642918</td>
+<td>47.486090</td>
+<td>8.704346</td>
+<td>supermarket</td>
+<td>Winterthur</td>
+<td>In der Au</td>
+<td>10</td>
+<td>8406.0</td>
+<td>Mo,Sa 07:30-20:00; Tu,We,Fr 08:00-20:00; Th 07...</td>
+</tr>
+<tr>
+<th>16</th>
+<td>4379763119</td>
+<td>47.496739</td>
+<td>8.753231</td>
+<td>supermarket</td>
+<td>Winterthur</td>
+<td>Industriestrasse</td>
+<td>11</td>
+<td>8400.0</td>
+<td>Mo-Fr 08:30-20:00, Sa 08:30-19:00; PH off</td>
+</tr>
+<tr>
+<th>17</th>
+<td>4471606841</td>
+<td>47.504229</td>
+<td>8.771731</td>
+<td>supermarket</td>
+<td>Winterthur</td>
+<td>Hintermühlenstrasse</td>
+<td>4</td>
+<td>8409.0</td>
+<td>Mo-Fr 08:00-20:00, Sa 08:00-18:00; PH off</td>
+</tr>
+<tr>
+<th>18</th>
+<td>4816412575</td>
+<td>47.510705</td>
+<td>8.693819</td>
+<td>supermarket</td>
+<td>Winterthur</td>
+<td>Lindenplatz</td>
+<td>1</td>
+<td>8408.0</td>
+<td>Mo-Fr 07:30-20:00; Sa 07:30-18:00; PH off</td>
+</tr>
+<tr>
+<th>19</th>
+<td>4978196565</td>
+<td>47.496801</td>
+<td>8.746607</td>
+<td>supermarket</td>
+<td>Winterthur</td>
+<td>Grüzefeldstrasse</td>
+<td>24</td>
+<td>8400.0</td>
+<td>Mo-Fr 07:30-19:00; Sa 08:00-19:00</td>
 </tr>
 <tr>
 <th>20</th>
-<td>1693993818-21</td>
-<td>https://www.immoscout24.ch/de/wohnung/mieten/o...</td>
-<td>4,5 Zimmer, CHF 2200.—</td>
-<td>Tösstalstrasse 234, 8405 Winterthur, ZH</td>
-<td>CHF 2200.—</td>
-<td>«4.5 Zimmerwohnung zu vermieten in Winterthur ...</td>
-<td>4,5 Zimmer, CHF 2200.—Tösstalstrasse 234, 8405...</td>
-<td>4.5</td>
-<td>&lt;NA&gt;</td>
-<td>2200</td>
+<td>7418113614</td>
+<td>47.495227</td>
+<td>8.758614</td>
+<td>supermarket</td>
+<td>Winterthur</td>
+<td>Rudolf-Diesel-Strasse</td>
+<td>19</td>
+<td>8404.0</td>
+<td>Mo-Sa 08:00-20:00; PH off</td>
 </tr>
 <tr>
-<th>27</th>
-<td>1693993822-28</td>
-<td>https://www.immoscout24.ch/de/wohnung/mieten/o...</td>
-<td>3 Zimmer, CHF 1640.—</td>
-<td>Auwiesenstrasse 13, 8406 Winterthur, ZH</td>
-<td>CHF 1640.—</td>
-<td>«Auwiesenstrasse 13, 8406 Winterthur»</td>
-<td>3 Zimmer, CHF 1640.—Auwiesenstrasse 13, 8406 W...</td>
-<td>3.0</td>
-<td>&lt;NA&gt;</td>
-<td>1640</td>
+<th>21</th>
+<td>7685095602</td>
+<td>47.495833</td>
+<td>8.749715</td>
+<td>supermarket</td>
+<td>Winterthur</td>
+<td>Industriestrasse</td>
+<td>8</td>
+<td>8404.0</td>
+<td>Mo-Fr 09:00-19:00, Sa 09:00-18:00; PH off</td>
 </tr>
 <tr>
-<th>34</th>
-<td>1693993822-35</td>
-<td>https://www.immoscout24.ch/de/wohnung/mieten/o...</td>
-<td>5,5 Zimmer, CHF 2960.—</td>
-<td>Schlosstalstrasse 219, 8408 Winterthur, ZH</td>
-<td>CHF 2960.—</td>
-<td>«Wohnen an der Töss»</td>
-<td>5,5 Zimmer, CHF 2960.—Schlosstalstrasse 219, 8...</td>
-<td>5.5</td>
-<td>&lt;NA&gt;</td>
-<td>2960</td>
+<th>22</th>
+<td>8519878942</td>
+<td>47.507437</td>
+<td>8.754705</td>
+<td>supermarket</td>
+<td>Winterthur</td>
+<td>Römerstrasse</td>
+<td>167</td>
+<td>8404.0</td>
+<td>Mo 08:30-12:15; Tu-Fr 08:30-12:15,15:00-18:30;...</td>
+</tr>
+<tr>
+<th>23</th>
+<td>9040336565</td>
+<td>47.477343</td>
+<td>8.699297</td>
+<td>supermarket</td>
+<td>Winterthur</td>
+<td>Ziegeleiplatz</td>
+<td>2</td>
+<td>8406.0</td>
+<td>Mo-Fr 07:30-20:00; Sa 08:00-19:00</td>
+</tr>
+<tr>
+<th>24</th>
+<td>9040336566</td>
+<td>47.477427</td>
+<td>8.699380</td>
+<td>supermarket</td>
+<td>Winterthur</td>
+<td>Ziegeleiplatz</td>
+<td>2</td>
+<td>8406.0</td>
+<td>Mo-Fr 07:30-20:00; Sa 08:00-18:00</td>
+</tr>
+<tr>
+<th>25</th>
+<td>9985258254</td>
+<td>47.510886</td>
+<td>8.759658</td>
+<td>supermarket</td>
+<td>Winterthur</td>
+<td>Guggenbühlstrasse</td>
+<td>6</td>
+<td>8404.0</td>
+<td>Mo-Sa 07:30-20:00</td>
+</tr>
+<tr>
+<th>26</th>
+<td>10221262155</td>
+<td>47.507012</td>
+<td>8.711808</td>
+<td>supermarket</td>
+<td>Winterthur</td>
+<td>Wülflingerstrasse</td>
+<td>73/75</td>
+<td>8400.0</td>
+<td>Mo-Fr 08:00-20:00; Sa 08:00-19:00</td>
 </tr>
 </tbody>
 </table>
@@ -8210,29 +8244,35 @@ dtype: int64
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=92641a30">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=7904d668">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="Count-and-identify-duplicated-values-(if-any)">Count and identify duplicated values (if any)<a class="anchor-link" href="#Count-and-identify-duplicated-values-(if-any)">¶</a></h2>
+<h2 id="Close-db-connection-(if-open)">Close db connection (if open)<a class="anchor-link" href="#Close-db-connection-(if-open)">¶</a></h2>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=cc6214d8">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=1b90d3ee">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [10]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [14]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
-<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Count duplicated values</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">duplicated</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Close db connection (if open)</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">check_conn</span><span class="p">(</span><span class="n">conn</span><span class="p">):</span>
+        <span class="n">conn</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">pass</span>
+<span class="k">except</span><span class="p">:</span>
+    <span class="k">pass</span>
 
-<span class="c1"># Identify rows with duplicated values, e.g.:</span>
-<span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[[</span><span class="s1">'web-scraper-order'</span><span class="p">,</span> <span class="s1">'price_raw'</span><span class="p">,</span> <span class="s1">'address_raw'</span><span class="p">]]</span><span class="o">.</span><span class="n">duplicated</span><span class="p">()]</span>
+<span class="c1"># Status (True = open, False = closed)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">check_conn</span><span class="p">(</span><span class="n">conn</span><span class="p">))</span>
 </pre></div>
 </div>
 </div>
@@ -8245,81 +8285,14 @@ dtype: int64
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>0
+<pre>False
 </pre>
 </div>
 </div>
-<div class="jp-OutputArea-child jp-OutputArea-executeResult">
-<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[10]:</div>
-<div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/html" tabindex="0">
-<div>
-<style scoped="">
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-<thead>
-<tr style="text-align: right;">
-<th></th>
-<th>web-scraper-order</th>
-<th>web-scraper-start-url</th>
-<th>rooms_area_price_raw</th>
-<th>address_raw</th>
-<th>price_raw</th>
-<th>description_raw</th>
-<th>text_raw</th>
-<th>rooms</th>
-<th>area</th>
-<th>price</th>
-</tr>
-</thead>
-<tbody>
-</tbody>
-</table>
 </div>
 </div>
 </div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=165f8f9f">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h3 id="Save-data-to-file">Save data to file<a class="anchor-link" href="#Save-data-to-file">¶</a></h3>
-</div>
-</div>
-</div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs" id="cell-id=3c2773d3">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [11]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-<div class="cm-editor cm-s-jupyter">
-<div class="highlight hl-ipython3"><pre><span></span><span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s1">'apartments_data_prepared.csv'</span><span class="p">,</span> 
-          <span class="n">sep</span><span class="o">=</span><span class="s2">","</span><span class="p">,</span> 
-          <span class="n">encoding</span><span class="o">=</span><span class="s1">'utf-8'</span><span class="p">,</span>
-          <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=86257783">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=e847eb93">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8329,12 +8302,12 @@ dtype: int64
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=7f5bf8aa">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=8e706987">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [12]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [15]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
@@ -8364,7 +8337,7 @@ dtype: int64
 <pre>-----------------------------------
 POSIX
 Linux | 6.8.0-1030-azure
-Datetime: 2025-09-29 12:30:27
+Datetime: 2025-09-29 12:56:15
 Python Version: 3.11.13
 -----------------------------------
 </pre>
